@@ -27,7 +27,6 @@
         url: apiUrl + "/categories",
         method: "GET"
       }).then((response) => {
-        console.log(response.data);
         vm.categories = response.data.data;
       }).catch((error) => {showError(error);})
     }
@@ -37,7 +36,6 @@
         url: apiUrl + "/services",
         method: "GET"
       }).then((response) => {
-        console.log(response.data);
         vm.services = response.data.data;
       }).catch((error) => {showError(error);})
     }

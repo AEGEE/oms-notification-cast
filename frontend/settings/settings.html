@@ -1,7 +1,7 @@
 <h1 class="page-header">Notification Settings</h1>
 
 
-<div ng-repeat="category in vm.categories">
+<div class="m-b-20" ng-repeat="category in vm.categories">
   <h5>{{ category.name }}</h5>
   <div class="row" ng-repeat="service in vm.services">
     <div class="col-sm-1 col-sm-offset-1">
@@ -10,8 +10,8 @@
         ng-model="category.enabled[service.name]" 
         ng-change="vm.saveCategory(category)" 
         class="js-switch" 
-        ui-switch />
+        ui-switch="{size: 'small'}" />
     </div>
-    <label class="col-sm-10">{{ service.name }}</label>
+    <p class="col-sm-5">{{ service.name }}</p>
   </div>
 </div>
