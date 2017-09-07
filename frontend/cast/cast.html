@@ -1,1 +1,64 @@
-Not implemented
+<h1 class="page-header">Cast a notification</h1>
+
+<form name="castForm" ng-submit="vm.submitForm()" class="margin-bottom-0" novalidate>
+  <div class="form-group m-b-20">
+    <label >Audience Type*</label>
+    <select class="form-control" ng-model="vm.cast.audience_type" ng-change="vm.resetAudience()" required>
+      <option value="user">Specific Users</option>
+      <option value="body">Specific Bodies</option>
+      <option value="circle">Specific Circle</option>
+      <option value="global">Everyone in the system</option>
+    </select>
+  </div>
+
+  <div class="form-group m-b-20" ng-show="vm.cast.audience_type && vm.cast.audience_type != 'global' && vm.cast.audience_type != 'none'">
+    <label>Audience</label>
+    <div class="row m-b-10 alert" style="background: #ddd;" ng-repeat="item in vm.cast.audience_params_unprocessed">
+      <div class="col-md-12">
+        <label>{{ item.name }}</label>
+        <button class="btn btn-sm btn-danger pull-right" ng-click="vm.cast.audience_params_unprocessed.splice($index, 1)"><i class="fa fa-minus"></i></button>
+      </div>
+    </div>
+
+    <div class="row m-b-10 alert" style="background: #ddd;">
+      <div class="col-md-12">
+        <angucomplete-alt class="pull-left"
+          id="audienceAutocomplete"
+          placeholder="Search audience"
+          pause="50"
+          selected-object="tmpItem"
+          remote-api-handler="vm.fetchAudience"
+          title-field="name"
+          description-field="description"
+          minlength="1"
+          input-class="form-control form-control-small">
+        </angucomplete-alt>
+        <button type="button" class="btn btn-sm btn-success pull-right" ng-click="vm.addToAudience(tmpItem)"><i class="fa fa-plus"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group m-b-20">
+    <label>Category code*</label>
+    <input type="text" class="form-control" ng-model="vm.cast.category" required />
+  </div>
+  <div class="form-group m-b-20">
+    <label>Category name*</label>
+    <input type="text" class="form-control" ng-model="vm.cast.category_name" required />
+  </div>
+
+  <div class="form-group m-b-20">
+    <label>Heading*</label>
+    <input type="text" class="form-control" ng-model="vm.cast.heading" required />
+  </div>
+  <div class="form-group m-b-20">
+    <label for="description">Url</label>
+    <input type="text" class="form-control" ng-model="vm.cast.heading_url" />
+  </div>
+  <div class="form-group m-b-20">
+    <label>Message*</label>
+    <textarea class="form-control" ng-model="vm.cast.body" placeholder="" rows="5" required></textarea>
+  </div>
+       
+  <button type="submit" ng-disabled="castForm.$pristine || castForm.$invalid" class="btn btn-sm btn-success"><i class="fa fa-bullhorn"></i> Cast </button>
+</form>

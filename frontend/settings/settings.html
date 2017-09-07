@@ -1,3 +1,17 @@
-Not implemented yet
+<h1 class="page-header">Notification Settings</h1>
 
-{{ vm.message }}
+
+<div ng-repeat="category in vm.categories">
+  <h5>{{ category.name }}</h5>
+  <div class="row" ng-repeat="service in vm.services">
+    <div class="col-sm-1 col-sm-offset-1">
+      <input 
+        type="checkbox" 
+        ng-model="category.enabled[service.name]" 
+        ng-change="vm.saveCategory(category)" 
+        class="js-switch" 
+        ui-switch />
+    </div>
+    <label class="col-sm-10">{{ service.name }}</label>
+  </div>
+</div>

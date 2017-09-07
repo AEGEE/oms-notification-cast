@@ -3,5 +3,6 @@
   "core_url": "http://omscore-nginx",
   "port": 8001,
   "auth_caching": true,
-  "auth_cache_expiration": 60000
+  "auth_cache_expiration": 60000,
+  "mongo_url": "mongodb://notifications-mongodb/oms-notification-cast"
 }

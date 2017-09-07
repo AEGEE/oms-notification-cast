@@ -22,13 +22,40 @@
   function NotificationSettingController($http) {
     var vm = this;
 
-    $http({
-      url: apiUrl + "/test",
-      method: "GET"
-    }).then((response) => {
-      console.log(response.data);
-      vm.message = response.data.data;
-    }).catch((error) => {showError(error);})
+    vm.loadCategories = () => {
+      $http({
+        url: apiUrl + "/categories",
+        method: "GET"
+      }).then((response) => {
+        console.log(response.data);
+        vm.categories = response.data.data;
+      }).catch((error) => {showError(error);})
+    }
+
+    vm.loadServices = () => {
+      $http({
+        url: apiUrl + "/services",
+        method: "GET"
+      }).then((response) => {
+        console.log(response.data);
+        vm.services = response.data.data;
+      }).catch((error) => {showError(error);})
+    }
+
+    vm.saveCategory = (category) => {
+      $http({
+        url: apiUrl + "/categories/" + category.code,
+        method: 'PUT',
+        data: category
+      }).then((response) => {
+        showSuccess("Changes saved successfully");
+      }).catch((error) => {
+        showError(error);
+      });
+    }
+
+    vm.loadServices();
+    vm.loadCategories();
   }
 
   angular
