@@ -1,0 +1,7 @@
+{
+  "registry_url": "http://omsserviceregistry:7000",
+  "core_url": "http://omscore-nginx",
+  "port": 8001,
+  "auth_caching": true,
+  "auth_cache_expiration": 60000
+}

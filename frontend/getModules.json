@@ -1,0 +1,15 @@
+{
+  "name": "OMS Notification Cast",
+  "code": "oms-notification-cast",
+  "pages": [{
+    "name": "Notification Settings",
+    "code": "notification_settings",
+    "module_link": "settings/settings.js",
+    "icon": "fa fa-wrench"
+  }, {
+    "name": "Cast A Notification",
+    "code": "notification_cast",
+    "module_link": "cast/cast.js",
+    "icon": "fa fa-bullhorn"
+  }]
+}

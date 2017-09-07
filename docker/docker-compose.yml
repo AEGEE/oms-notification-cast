@@ -1,0 +1,58 @@
+version: '3.2'
+
+services:
+    notifications-mongodb:
+        image: mongo:latest
+        expose:
+            - "27017"
+        volumes:
+            - type: volume
+              source: notifications_db
+              target: /data/db
+
+    oms-notification-cast:
+        build:
+            context: ./$PATH_OMS_NOTIFICATION_CAST/oms-notification-cast
+            dockerfile: ./Dockerfile.dev
+        volumes:
+            - "./$PATH_OMS_NOTIFICATION_CAST/../:/usr/app/src"
+        expose:
+            - "8001"
+        ports:
+            - "8001:8001"
+        depends_on:
+            - notifications-mongodb
+        labels:
+            - "traefik.frontend.rule=HostRegexp:{domain:[a-z0-9.]+};PathPrefix:/services/oms-notification-cast/api;PathPrefixStrip:/services/oms-notification-cast/api"
+            - "traefik.frontend.priority=101"
+            - "traefik.port=8001"
+            - "traefik.backend=oms-notification-cast"
+            - "traefik.enable=true"
+            - "registry.status=/status"
+
+    oms-notification-cast-frontend:
+        build:
+            context: ./$PATH_OMS_NOTIFICATION_CAST/oms-notification-cast-frontend
+            dockerfile: ./Dockerfile.dev
+        volumes:
+            - "./$PATH_OMS_NOTIFICATION_CAST/../frontend:/usr/app/src"
+        expose:
+            - "8002"
+        labels:
+            - "traefik.frontend.rule=HostRegexp:{domain:[a-z0-9.]+};PathPrefix:/services/oms-notification-cast;PathPrefixStrip:/services/oms-notification-cast"
+            - "traefik.frontend.priority=100"
+            - "traefik.port=8002"
+            - "traefik.backend=oms-notification-cast-frontend"
+            - "traefik.enable=true"
+            - "registry.status=status.json"
+            - "registry.modules=getModules.json"
+
+
+volumes:
+    notifications_db:
+        driver: "local"
+
+networks:
+  default:
+    external:
+      name: OMS
