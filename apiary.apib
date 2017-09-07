@@ -1,0 +1,150 @@
+FORMAT: 1A
+HOST: http://oms-notification-cast.apiblueprint.org/
+
+# oms-notification-cast
+
+Notifications cast takes notifications generated somewhere in the application and casts them to their audience through registered notification services like push or email.
+It forwards them to all services that have the notification category set in the registry
+
+## Cast a notification [POST /cast]
+
+Main endpoint, translates a notification into audience type users and forwards it to all registered notification services. Applies filtering based on users preferences. It will always and instantly return success true when the json is formatted correctly, there is no way to wait for successful notification delivery.
+
++ Attributes
+    + audience_type (required, enum) - To which type of audience do you want to send this. The actual audience will be determined by translating the audience-params to user-ids.
+        - user (string) - Use when you want to directly address one or more users
+        - body (string) - Use when you want to notify one or more bodies
+        - circle (string) - Use when you want to notify one or more circles
+        - global (string) - Use when you want to notify everyone. Please use this with care as you don't want to spam the network too much. audience params will be ignored upon this type.
+    + audience_params: '1', '2', '3' (required, array) - The parameter for the above type of audience. Will be used to determine the actual users audience. E.g. if you specified bodies as audience type then this should an array of body ids. Invalid ids will be ignored.
+    + service: 'oms events' (required, string) - The service that sent the notification. Will be used to group notification settings
+    + category: 'event.new' (required, string) - A category of notification. All notifications which were fired by the same type of event should have the same category so the user can disable that category in his notification settings.
+    + category_name: 'New events' (required, string) - A prettier version of the above for display to the user
+    + time: '2017-09-05T15:46:09.449' (required, string) - When was the notification created
+    + heading: 'New event in your local!' (required, string) - A short description of the event
+    + heading_link: 'app.events.single' (optional, string) - The ui router state that the notification should link to
+    + heading_link_params (optional, object) - Parameters that will be passed to ui-routers state.go
+    + heading_url: 'http://www.google.de' (optional, string) - If you didn't pass a heading link, you can pass an url instead which can lead anywhere. If you did pass both a link and an url, the url will be ignored. If you want to point towards an external site you have to include the http:// preamble, otherwise the link will be appended to the base url
+    + body: 'long long text' (required, string) - A text describing in detail what the notification is about. Still be concise here.
+
++ Request (application/json)
+
+    + Headers
+    
+            X-Auth-Token: User authorization token, for example: fe6bc850-4ace-11e7-9f33-8b694e51753b
+
+    + Body
+
+            {
+                "audience_type": "user",
+                "audience_params": ["1", "2", "3"],
+                "service": "oms-events",
+                "category": "event.new",
+                "category_name": "New events",
+                "time": "2017-09-05T15:46:09.449",
+                "heading": "New event in your local!",
+                "heading_link": "app.events.single",
+                "heading_link_params": {
+                    "id": "DevelopYourself4"
+                },
+                "body": "blablabla..."
+            }
+
++ Response 201 (application/json)
+
+        {
+            "success": true
+        }
+
+
+## Get all known categories [GET /categories]
+
+Categories will be registered automatically when a notification of a type is first fired. If you want to register notification categories anyways, fire a notification with empty audience.
+As you request this for yourself also your delivery preferences will be shown
+
++ Request
+
+    + Headers
+    
+            X-Auth-Token: User authorization token, for example: fe6bc850-4ace-11e7-9f33-8b694e51753b
+
+
++ Response 200 (application/json)
+
+        {
+            "success": true,
+            "data": [
+                {
+                    "code": "events.new",
+                    "name": "New events",
+                    "enabled": {
+                        "push": true,
+                        "mail": true
+                    }
+                },
+                {
+                    "code": "events.apply",
+                    "name": "Event applications",
+                    "enabled": {
+                        "push": false,
+                        "mail": true
+                    }
+                }
+            ]
+        }
+
+## Enable or disable a category [PUT /categories/{code}]
+
+Based on this filtering notifications will be forwarded to their respective service.
+
++ Parameters
+    + code: 'events.new (required, string) - A category code from the listing above
+    
++ Attributes
+    + enabled (object) - For each registered service you can set whether you want this type of category to be delivered
+    
++ Request (application/json)
+
+    + Headers
+    
+            X-Auth-Token: User authorization token, for example: fe6bc850-4ace-11e7-9f33-8b694e51753b
+
+    + Body
+    
+            {
+                "enabled": {
+                    "push": false,
+                    "mail": false
+                }
+            }
+
++ Response 200
+
+## Get registered services [GET /services]
+
+These are all known notification providers, as fetched from the serviceregistry. You can use each services code to enable or disable notification categories.
+
++ Request
+
+    + Headers
+    
+            X-Auth-Token: User authorization token, for example: fe6bc850-4ace-11e7-9f33-8b694e51753b
+
+
++ Response 200 (application/json)
+
+        {
+            "success": true,
+            "data": [
+                {
+                    "code": "push",
+                    "name": "Push Notifications",
+                    "description": "Sends notifications straight to your phone"
+                },
+                {
+                    "code": "mail",
+                    "name": "Mailing service",
+                    "description": "The old way of contacting someone"
+                }
+            ]
+        }
